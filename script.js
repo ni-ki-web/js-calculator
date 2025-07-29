@@ -4,6 +4,8 @@ const liveResult = document.getElementById('live-result');
 
 let isResultShown = false;
 let justCalculated = false;
+let justInsertedANS = false;
+let ANS = null;
 
 buttons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -26,7 +28,10 @@ document.addEventListener('keydown', (e) => {
     if (allowedKeys.includes(e.key)) {
         let keyValue = e.key === '*' ? 'x' : e.key === '/' ? '÷' : e.key;
         handleInput(keyValue);
+    } else if (e.key.toLowerCase() === 'a') {
+        handleInput('ANS');
     } else if (e.key === 'Enter') {
+        e.preventDefault();
         calculate();
     } else if (e.key === 'Backspace') {
         deleteLast();
@@ -36,8 +41,9 @@ document.addEventListener('keydown', (e) => {
 });
 
 function handleInput(inputVal) {
+    console.log(display.textContent);
     if (justCalculated) {
-        clearDisplay();
+        display.textContent = '';
         justCalculated = false;
     }
     if (isResultShown) {
@@ -45,12 +51,20 @@ function handleInput(inputVal) {
         liveResult.textContent = '';
         isResultShown = false;
     }
-    display.textContent += inputVal;
-    previewResult();
+    if (inputVal === 'ANS') {
+        display.textContent += ANS;
+        justInsertedANS = true;
+    } else {
+        display.textContent += inputVal;
+        justInsertedANS = false;
+    }
+    display.classList.remove('no-cursor');
+    livePreview();
 }
 
 function toJSExpression(expr) {
     return expr
+        .replace(/ANS/g, ANS !== null ? ANS : '0')
         .replace(/x/g, '*')
         .replace(/÷/g, '/')
         .replace(/(\d)(\()/g, '$1*(')
@@ -61,7 +75,7 @@ function toJSExpression(expr) {
 function calculate() {
     const expression = display.textContent;
     try {
-        if (/[^0-9+\-x*/÷%.()]/.test(expression)) {
+        if (/[^0-9+\-*x().÷/%A-Za-z\s]+$/.test(expression)) {
             throw new Error("Invalid Characters");
         }
         const jsExpr = toJSExpression(expression);
@@ -70,7 +84,9 @@ function calculate() {
         if (!isFinite(result)) {
             display.textContent = 'Error';
         } else {
-            display.textContent = parseFloat(result.toFixed(5));
+            const formatted = parseFloat(result.toFixed(5));
+            display.textContent = formatted;
+            ANS = formatted;
         }
         display.classList.add('no-cursor');
         liveResult.textContent = '';
@@ -90,7 +106,7 @@ function livePreview() {
         return;
     }
 
-    if (/[^0-9+\-*x().÷/%]/.test(currentExpr)) {
+    if (/[^0-9+\-*x().÷/%A-Za-z\s]+$/.test(currentExpr)) {
         liveResult.textContent = '';
         return;
     }
@@ -125,8 +141,13 @@ function clearDisplay() {
 function deleteLast() {
     if (isResultShown) {
         clearDisplay();
+        return;
+    } 
+    if (justInsertedANS) {
+        display.textContent = display.textContent.slice(0, -ANS.toString().length);
+        justInsertedANS = false;
     } else {
         display.textContent = display.textContent.slice(0, -1);
-        previewResult();
     }
+    livePreview();
 }
