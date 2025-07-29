@@ -1,12 +1,26 @@
 const buttons = document.querySelectorAll('button');
 const displayExpression = document.getElementById('display-expression');
 const liveResult = document.getElementById('result-preview');
-const expressionText = document.getElementById('expression-text');
+const exprLeft = document.getElementById('expression-text-left');
+const exprRight = document.getElementById('expression-text-right');
+const cursor = document.getElementById('blinking-cursor');
 
 let resultDisplayed = false;
 let justCalculatedExpression = false;
 let justInsertedANS = false;
 let currentANS = 0;
+let cursorPostition = 0;
+
+function getFullExpression() {
+    return exprLeft.textContent + exprRight.textContent;
+}
+
+function setExpression(left, right) {
+    exprLeft.textContent = left;
+    exprRight.textContent = right;
+    scrollToCursor();
+    liveResultPreview();
+}
 
 // Event listener for each UI button : ensure the keys work when clicked
 buttons.forEach(btn => {
@@ -19,6 +33,10 @@ buttons.forEach(btn => {
             deleteLast();
         } else if (btn.classList.contains('clear')) {
             clearDisplay();
+        } else if (btn.classList.contains('left-arrow')) {
+            document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+        } else if (btn.classList.contains('right-arrow')) {
+            document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
         } else {
             handleInput(btnVal);
         }
@@ -40,6 +58,26 @@ document.addEventListener('keydown', (e) => {
         deleteLast();
     } else if (e.key === 'Escape') {
         clearDisplay();
+    } else if (e.key === 'ArrowLeft') {
+        if (exprLeft.textContent.endsWith('ANS')) {
+            exprLeft.textContent = exprLeft.textContent.slice(0, -3);
+            exprRight.textContent = 'ANS' + exprRight.textContent;
+        } else if (exprLeft.textContent.length > 0) {
+            const lastChar = exprLeft.textContent.slice(-1);
+            exprLeft.textContent = exprLeft.textContent.slice(0, -1);
+            exprRight.textContent = lastChar + exprRight.textContent;
+        }
+        scrollToCursor();
+    } else if (e.key === 'ArrowRight') {
+        if (exprRight.textContent.startsWith('ANS')) {
+            exprRight.textContent = exprRight.textContent.slice(3);
+            exprLeft.textContent += 'ANS';
+        } else if (exprRight.textContent.length > 0) {
+            const nextChar = exprRight.textContent[0];
+            exprRight.textContent = exprRight.textContent.slice(1);
+            exprLeft.textContent += nextChar;
+        }
+        scrollToCursor();
     }
 });
 
@@ -48,24 +86,30 @@ function handleInput(value) {
     const isSymbol = ['+', '-', 'x', '÷', '%', '(', '*', '/'].includes(value);
 
     if (justCalculatedExpression) {
-        expressionText.textContent = value === 'ANS' ? 'ANS' : isSymbol ? 'ANS' + value : value;
-        justCalculatedExpression = false;    
+        if (value === 'ANS') {
+            setExpression('ANS', '');
+        } else if (isSymbol) {
+            setExpression('ANS' + value, '');
+        } else {
+            setExpression(value, '');
+        }
+        justCalculatedExpression = false;
     } else if (resultDisplayed) {
-        expressionText.textContent = (value === 'ANS') ? 'ANS' : value;
+        setExpression(value === 'ANS' ? 'ANS' : value, '');
         liveResult.textContent = '';
         resultDisplayed = false;
     } else {
         if (value === 'ANS') {
-            expressionText.textContent += 'ANS';
+            exprLeft.textContent += 'ANS';
             justInsertedANS = true;
         } else {
-            expressionText.textContent += value;
+            exprLeft.textContent += value;
             justInsertedANS = false;
         }
     }
 
     scrollToCursor();
-    expressionText.classList.remove('no-cursor');
+    cursor.classList.remove('no-cursor');
     liveResultPreview();
 }
 
@@ -81,7 +125,7 @@ function convertToJSExpression(expr) {
 
 // Core function
 function calculateExpression() {
-    const expression = expressionText.textContent;
+    const expression = getFullExpression();
 
     try {
         if (/[^0-9+\-*x().÷/%A-Za-z\s]+$/.test(expression)) {
@@ -95,15 +139,15 @@ function calculateExpression() {
             displayExpression.textContent = 'Error';
         } else {
             const formattedExpr = formatNumber(result);
-            expressionText.textContent = formattedExpr;
+            setExpression(formattedExpr, '');
             document.getElementById('ans-val').textContent = formattedExpr;
             currentANS = result;
         }
-        expressionText.classList.add('no-cursor');
+        cursor.classList.add('no-cursor');
         liveResult.textContent = '';
         justCalculatedExpression = true;
     } catch {
-        expressionText.textContent = 'Error';
+        exprLeft.textContent = 'Error';
         liveResult.textContent = '';
         resultDisplayed = true;
     }
@@ -112,7 +156,7 @@ function calculateExpression() {
 
 // liveResultPreview function: should show the current total of the expression entered
 function liveResultPreview() {
-    const currentExpr = expressionText.textContent.trim();
+    const currentExpr = getFullExpression().trim();
     if (!currentExpr) {
         liveResult.textContent = '= 0';
         return;
@@ -150,24 +194,26 @@ function liveResultPreview() {
 
 // clearDisplay function - called when Escape key is pressed or 'C' on keypad
 function clearDisplay() {
-    expressionText.textContent = '';
+    exprLeft.textContent = '';
+    exprRight.textContent = '';
     liveResult.textContent = '';
-    expressionText.classList.remove("no-cursor");
+    cursor.classList.remove("no-cursor");
     resultDisplayed = false;
     justCalculatedExpression = false;
     scrollToCursor();
 }
+
 // deleteLast function - called when Backspace is pressed or 'DEL' on keypad
 function deleteLast() {
     if (resultDisplayed) {
         clearDisplay();
         return;
     } 
-    if (justInsertedANS || expressionText.textContent === 'ANS') {
-        expressionText.textContent = expressionText.textContent.slice(0, -3);
+    if (exprLeft.textContent.endsWith('ANS')) {
+        exprLeft.textContent = exprLeft.textContent.slice(0, -3);
         justInsertedANS = false;
     } else {
-        expressionText.textContent = expressionText.textContent.slice(0, -1);
+        exprLeft.textContent = exprLeft.textContent.slice(0, -1);
     }
     liveResultPreview();
     scrollToCursor();
@@ -178,5 +224,5 @@ function scrollToCursor() {
 }
 
 function formatNumber(num) {
-    return parseFloat(num.toFixed(5));
+    return (typeof num === 'number' && isFinite(num)) ? parseFloat(num.toFixed(5)) : 'Error';
 }

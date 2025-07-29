@@ -164,7 +164,7 @@ button.equal:hover {
 }
 
 /* Blinking Cursor */
-#expression-text::after {
+#blinking-cursor::after {
     content: '';
     display: inline-block;
     width: 2px;
@@ -172,10 +172,11 @@ button.equal:hover {
     background-color: #95e2fcca;
     animation: blink 1s steps(2, start) infinite;
     vertical-align: middle;
-    margin-left: 2px;
+    margin-left: -2px;
+    margin-bottom: 1px;
 }
 
-.no-cursor #expression-text::after {
+.no-cursor #blinking-cursor::after {
     display: none;
 }
 
