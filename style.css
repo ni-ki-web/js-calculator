@@ -30,7 +30,7 @@ body {
     backdrop-filter: blur(10px);
     color: #30c3fc;
     font-size: 1rem;
-    height: 100px;
+    height: 120px;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
@@ -38,19 +38,31 @@ body {
     display: flex;
     flex-direction: column;
     text-align: right;
+    justify-content: space-between;
     overflow-x: auto;
-    white-space: nowrap;
+    overflow-y: hidden;
+}
+
+.ans-memory {
+    font-size: 0.9rem;
+    color: #999;
 }
 
 .expression {
+    display: block;
     font-size: 2rem;
     color:#fff;
-    margin-bottom: 4px;
+    margin-top: 4px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 .live-result {
     font-size: 1rem;
     color: #999;
+    min-height: 1.2em;
 }
 
 /* Keypad Layout */
@@ -94,12 +106,12 @@ body {
 .operator-keys button {
     height: 100%;
     font-family: 'Orbitron', monospace;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     background-color: #30c3fc;
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: 1px 20px;
+    padding: 15px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.3s, ease;
 }
@@ -123,37 +135,49 @@ button.clear:hover, button.delete:hover, button.plus-minus:hover, button.left-ar
 }
 
 button.equal {
-  background-color: #30c3fc;
-  color: #fff;
+  background-color: #514fe8;
+  color: #ffffff;
 }
 
 button.equal:hover {
-  background-color: #95e2fc;
+  background-color: #9795fc;
 }
 
 /* Blinking cursor */
-#display {
+#display-expression {
     position: relative;
-    min-height: 2.5rem;
+    min-height: 2.2rem;
     font-family: 'Orbitron', monospace;
     font-size: 2rem;
-    padding-right: 8px;
-    word-break: break-all;
-    white-space: pre-wrap;
+    padding: 4px 4px 4px 6px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
     letter-spacing: 0.1em;
+    line-height: 1;
+    display: inline-flex;
+    justify-content: flex-end;
+    text-align: right;
+    align-items: center;
+    scroll-behavior: smooth;
+    width: 100%;
+    overflow-wrap: normal;
+    word-break: keep-all;
 }
 
-#display::after {
+#display-expression::after {
     content: '';
     display: inline-block;
-    width: 1px;
+    width: 2px;
     height: 1em;
     background-color: #95e2fc;
     animation: blink 1s steps(2, start) infinite;
-    vertical-align: middle;
+    align-self: center;
+    margin-left: 2px;
 }
 
-#display.no-cursor::after {
+#display-expression.no-cursor::after {
     display: none;
 }
 
