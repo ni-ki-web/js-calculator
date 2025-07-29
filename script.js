@@ -1,6 +1,7 @@
 const buttons = document.querySelectorAll('button');
 const displayExpression = document.getElementById('display-expression');
 const liveResult = document.getElementById('result-preview');
+const expressionText = document.getElementById('expression-text');
 
 let resultDisplayed = false;
 let justCalculatedExpression = false;
@@ -47,24 +48,24 @@ function handleInput(value) {
     const isSymbol = ['+', '-', 'x', '÷', '%', '(', '*', '/'].includes(value);
 
     if (justCalculatedExpression) {
-        displayExpression.textContent = value === 'ANS' ? 'ANS' : isSymbol ? 'ANS' + value : value;
+        expressionText.textContent = value === 'ANS' ? 'ANS' : isSymbol ? 'ANS' + value : value;
         justCalculatedExpression = false;    
     } else if (resultDisplayed) {
-        displayExpression.textContent = (value === 'ANS') ? 'ANS' : value;
+        expressionText.textContent = (value === 'ANS') ? 'ANS' : value;
         liveResult.textContent = '';
         resultDisplayed = false;
     } else {
         if (value === 'ANS') {
-            displayExpression.textContent += 'ANS';
+            expressionText.textContent += 'ANS';
             justInsertedANS = true;
         } else {
-            displayExpression.textContent += value;
+            expressionText.textContent += value;
             justInsertedANS = false;
         }
     }
 
-    displayExpression.scrollLeft = displayExpression.scrollWidth;
-    displayExpression.classList.remove('no-cursor');
+    scrollToCursor();
+    expressionText.classList.remove('no-cursor');
     liveResultPreview();
 }
 
@@ -80,7 +81,7 @@ function convertToJSExpression(expr) {
 
 // Core function
 function calculateExpression() {
-    const expression = displayExpression.textContent;
+    const expression = expressionText.textContent;
 
     try {
         if (/[^0-9+\-*x().÷/%A-Za-z\s]+$/.test(expression)) {
@@ -93,24 +94,25 @@ function calculateExpression() {
         if (!isFinite(result)) {
             displayExpression.textContent = 'Error';
         } else {
-            const formattedExpr = foramtNumber(result);
-            displayExpression.textContent = formattedExpr;
+            const formattedExpr = formatNumber(result);
+            expressionText.textContent = formattedExpr;
             document.getElementById('ans-val').textContent = formattedExpr;
-            currentANS = formattedExpr;
+            currentANS = result;
         }
-        displayExpression.classList.add('no-cursor');
+        expressionText.classList.add('no-cursor');
         liveResult.textContent = '';
         justCalculatedExpression = true;
     } catch {
-        displayExpression.textContent = 'Error';
+        expressionText.textContent = 'Error';
         liveResult.textContent = '';
         resultDisplayed = true;
     }
+    scrollToCursor();
 }
 
 // liveResultPreview function: should show the current total of the expression entered
 function liveResultPreview() {
-    const currentExpr = displayExpression.textContent.trim();
+    const currentExpr = expressionText.textContent.trim();
     if (!currentExpr) {
         liveResult.textContent = '= 0';
         return;
@@ -121,7 +123,7 @@ function liveResultPreview() {
     try {
         const preResult = new Function(`return ${previewJsExpr}`)();
         if (isFinite(preResult)) {
-            liveResult.textContent = `= ${foramtNumber(preResult)}`;
+            liveResult.textContent = `= ${formatNumber(preResult)}`;
             return;
         }
     } catch {
@@ -139,7 +141,7 @@ function liveResultPreview() {
         const exprResult = new Function(`return ${fallbackExpr}`)();
 
         if (isFinite(exprResult)) {
-            liveResult.textContent = `= ${foramtNumber(exprResult)}`;
+            liveResult.textContent = `= ${formatNumber(exprResult)}`;
         } 
     } catch {
         liveResult.textContent = '= ...';
@@ -148,11 +150,12 @@ function liveResultPreview() {
 
 // clearDisplay function - called when Escape key is pressed or 'C' on keypad
 function clearDisplay() {
-    displayExpression.textContent = '';
+    expressionText.textContent = '';
     liveResult.textContent = '';
-    displayExpression.classList.remove("no-cursor");
+    expressionText.classList.remove("no-cursor");
     resultDisplayed = false;
     justCalculatedExpression = false;
+    scrollToCursor();
 }
 // deleteLast function - called when Backspace is pressed or 'DEL' on keypad
 function deleteLast() {
@@ -160,15 +163,20 @@ function deleteLast() {
         clearDisplay();
         return;
     } 
-    if (justInsertedANS || displayExpression.textContent === 'ANS') {
-        displayExpression.textContent = displayExpression.textContent.slice(0, -3);
+    if (justInsertedANS || expressionText.textContent === 'ANS') {
+        expressionText.textContent = expressionText.textContent.slice(0, -3);
         justInsertedANS = false;
     } else {
-        displayExpression.textContent = displayExpression.textContent.slice(0, -1);
+        expressionText.textContent = expressionText.textContent.slice(0, -1);
     }
     liveResultPreview();
+    scrollToCursor();
 }
 
-function foramtNumber (num) {
+function scrollToCursor() {
+    displayExpression.scrollLeft = displayExpression.scrollWidth;
+}
+
+function formatNumber(num) {
     return parseFloat(num.toFixed(5));
 }
