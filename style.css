@@ -51,15 +51,26 @@ body {
     opacity: 0.6;
 }
 
-.expression {
-    display: block;
+#display-expression {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
     font-size: 2rem;
-    color:#fff;
+    font-weight: 500;
+    color: #fff;
+    padding: 4px 6px;
     margin: 4px 0;
+    height: 2.4rem;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    word-spacing: 0.1em;
+    white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    white-space: nowrap;
+    scroll-behavior: smooth;
     max-width: 100%;
+    width: 100%;
 }
 
 .live-result {
@@ -68,6 +79,7 @@ body {
     opacity: 0.8;
     margin-top: 4px;
     min-height: 1.2em;
+    letter-spacing: 2px;
 }
 
 /* Keypad Layout */
@@ -77,7 +89,6 @@ body {
     gap: 20px;
 }
 
-/* Left Section */
 .keypad-left {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -86,40 +97,36 @@ body {
     flex: 1;
 }
 
-.keypad-left button {
-    font-size: 1.2rem;
-    background-color: #333;
-    color:#30c3fc;
-    border: none;
-    border-radius: 8px;
-    padding: 15px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.keypad-left button:hover {
-    background-color: #666;
-}
-
 .operator-keys {
     display: grid;
     grid-template-rows: repeat(5, 1fr);
     gap: 10px;
 }
 
-.operator-keys button {
-    height: 100%;
+button {
     font-size: 1.2rem;
-    background-color: #30c3fc;
-    color: #fff;
     border: none;
     border-radius: 8px;
     padding: 15px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.3s, ease;
+    transition: background-color 0.2s ease, transform 0.3s ease;
 }
 
-.operator-keys button:hover {
+.keypad-left button {
+    background-color: #333;
+    color:#30c3fc;
+}
+
+.keypad-left button:hover {
+    background-color: #666;
+}
+
+.operator-keys button, button.clear, button.delete, button.left-arrow, button.right-arrow {
+    background-color: #30c3fc;
+    color: #fff;
+}
+
+.operator-keys button:hover, button.clear:hover, button.delete:hover, button.left-arrow:hover, button.right-arrow:hover {
     background-color: #95e2fc;
 }
 
@@ -127,13 +134,9 @@ button:active {
     transform: translateY(2px);
 }
 
-button.clear, button.delete, button.left-arrow, button.right-arrow {
-    background-color: #30c3fc;
-    color: #fff;
-}
-
-button.clear:hover, button.delete:hover, button.left-arrow:hover, button.right-arrow:hover {
-    background-color: #95e2fc;
+button.active {
+    transform: scale(0.95);
+    background-color: #cc89ef !important;
 }
 
 button.equal {
@@ -145,35 +148,16 @@ button.equal:hover {
   background-color: #9795fc;
 }
 
-#display-expression {
-    position: relative;
-    font-size: 2rem;
-    height: 2.4rem;
-    line-height: 1;
-    padding: 4px 6px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    word-spacing: 0.1em;
-    display: flex;
-    white-space: nowrap;
-    justify-content: flex-end;
-    text-align: right;
-    align-items: center;
-    scroll-behavior: smooth;
-    width: 100%;
-}
-
 /* Blinking Cursor */
 #blinking-cursor::after {
     content: '';
     display: inline-block;
     width: 2px;
-    height: 1em;
+    height: 1.2em;
     background-color: #95e2fcca;
     animation: blink 1s steps(2, start) infinite;
     vertical-align: middle;
     margin-left: -2px;
-    margin-bottom: 1px;
 }
 
 .no-cursor #blinking-cursor::after {
