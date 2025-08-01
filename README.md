@@ -2,7 +2,7 @@
 
 A basic calculator built with **HTML**, **CSS** and **JavaScript**, offering real-time result preview, custom cursor control and keyboard support.
 
-![Calculator Screenshot](./asset/calc-screenshot.png)
+<img src="./asset/calc-screenshot.png" alt="Calculator Screenshot" width="400"/>
 
 
 ## Features
