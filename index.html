@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Link to Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Oxanium:wght@200..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Link for math.js -->
+     <script src="https://cdn.jsdelivr.net/npm/mathjs@12.4.0/lib/browser/math.js"></script>
 
     <title>Calculator</title>
 </head>
@@ -16,7 +18,7 @@
     <div class="calc-wrapper">
         <div class="display-screen" id="display-wrapper">
             <div class="ans-memory">ANS: <span id="ans-val">0</span></div>
-            <div class="expression" id="display-expression">
+            <div id="display-expression">
                 <span id="expression-text-left"></span>
                 <span id="blinking-cursor"></span>
                 <span id="expression-text-right"></span>
@@ -26,33 +28,33 @@
 
         <div class="calc-keys">
             <div class="keypad-left">
-                <button type="button" class="clear">C</button>
-                <button type="button" class="delete">DEL</button>
-                <button type="button">%</button>
-                <button type="button">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">4</button>
-                <button type="button">5</button>
-                <button type="button">6</button>
-                <button type="button">7</button>
-                <button type="button">8</button>
-                <button type="button">9</button>
-                <button type="button">0</button>
-                <button type="button">(</button>
-                <button type="button">)</button>
-                <button type="button">.</button>
-                <button type="button" class="left-arrow"><i class="fas fa-chevron-left"></i></button>
-                <button type="button" class="right-arrow"><i class="fas fa-chevron-right"></i></button>
+                <button type="button" data-key="Escape" class="clear">C</button>
+                <button type="button" data-key="Backspace" class="delete">DEL</button>
+                <button type="button" data-key="%">%</button>
+                <button type="button" data-key="1">1</button>
+                <button type="button" data-key="2">2</button>
+                <button type="button" data-key="3">3</button>
+                <button type="button" data-key="4">4</button>
+                <button type="button" data-key="5">5</button>
+                <button type="button" data-key="6">6</button>
+                <button type="button" data-key="7">7</button>
+                <button type="button" data-key="8">8</button>
+                <button type="button" data-key="9">9</button>
+                <button type="button" data-key="0">0</button>
+                <button type="button" data-key="(">(</button>
+                <button type="button" data-key=")">)</button>
+                <button type="button" data-key=".">.</button>
+                <button type="button" data-key="ArrowLeft" class="left-arrow"><i class="fas fa-chevron-left"></i></button>
+                <button type="button" data-key="ArrowRight" class="right-arrow"><i class="fas fa-chevron-right"></i></button>
             </div>
 
             <div class="operator-keys">
-                <button type="button">÷</button>
-                <button type="button">x</button>
-                <button type="button">-</button>
-                <button type="button">+</button>
-                <button type="button" class="equal">=</button>
-                <button type="button">ANS</button>
+                <button type="button" data-key="/">÷</button>
+                <button type="button" data-key="x">x</button>
+                <button type="button" data-key="-">-</button>
+                <button type="button" data-key="+">+</button>
+                <button type="button" data-key="Enter" class="equal">=</button>
+                <button type="button" data-key="ANS">ANS</button>
             </div>
         </div>
     </div>
