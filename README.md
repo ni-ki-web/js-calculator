@@ -36,4 +36,4 @@ A basic calculator built with **HTML**, **CSS** and **JavaScript**, offering rea
 
 
 ## Live Demo
-[Live Calculator]()
+[Live Calculator](https://ni-ki-web.github.io/js-calculator/)
